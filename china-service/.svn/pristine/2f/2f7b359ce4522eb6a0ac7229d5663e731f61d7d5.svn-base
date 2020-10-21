@@ -1,0 +1,50 @@
+package com.stone.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.CmRole;
+import com.stone.mapper.CmRoleMapper;
+import com.stone.service.CmRoleService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CmRoleServiceImpl extends ServiceImpl<CmRoleMapper, CmRole> implements CmRoleService{
+
+    @Autowired
+    private CmRoleMapper cmRoleMapper;
+
+    @Override
+    public Page<CmRole> listPage(PageQueryBean<CmRole> pageQueryBean) {
+        // 分页
+        int pageNum = pageQueryBean.getPageNum() == null ? 0 : pageQueryBean.getPageNum();
+        int pageSize = pageQueryBean.getPageSize() == null ? 10 : pageQueryBean.getPageSize();
+        Page<CmRole> page = new Page<>(pageNum, pageSize);
+        // 获取查询条件
+        QueryWrapper<CmRole> wrapper = new QueryWrapper<>();
+        CmRole condition = pageQueryBean.getQueryCondition();
+        if (condition != null) {
+            if (StringUtils.isNotEmpty(condition.getRoleCode())) {
+                wrapper = wrapper.like("role_code", condition.getRoleCode());
+            }
+            if (StringUtils.isNotEmpty(condition.getRoleName())) {
+                wrapper = wrapper.like("role_name", condition.getRoleName());
+            }
+            if (condition.getStatus() != null) {
+                wrapper = wrapper.eq("status", condition.getStatus());
+            }
+        }
+        // 拼接排序条件
+        if (StringUtils.isNotEmpty(pageQueryBean.getOrderByColumn())) {
+            if (StringUtils.isNotEmpty(pageQueryBean.getIsAsc()) && "desc".equals(pageQueryBean.getIsAsc().toLowerCase())) {
+                wrapper = wrapper.orderByDesc(pageQueryBean.getOrderByColumn());
+            }else{
+                wrapper = wrapper.orderByAsc(pageQueryBean.getOrderByColumn());
+            }
+        }
+        return this.cmRoleMapper.selectPage(page, wrapper);
+    }
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stone.mapper.CmUserMapper">
+    <insert id="addUser" parameterType="com.stone.domain.CmUser">
+        INSERT INTO cm_user
+        VALUES (
+        (SELECT MAX(id)+1 FROM cm_user b),
+        #{userCode},#{userName},#{password},#{contacts},#{phone},#{loginLock},#{roleCode},#{createTime})
+    </insert>
+
+
+    <select id="selectRoleMenu" resultType="com.stone.domain.CmRoleMenu">
+        select * from cm_role_menu where role_code=#{roleCode};
+    </select>
+
+</mapper>

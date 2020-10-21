@@ -1,0 +1,14 @@
+package com.stone.mapper;
+
+import com.stone.domain.CmProductCheck;
+import com.stone.domain.CmUser;
+
+import java.util.List;
+
+public interface CmProductCheckMapper {
+    List<CmProductCheck> selectCheck(Integer status);
+    CmUser selectByUserName(String userCode);
+    void updatePorcelain(String porcelainCode,String url);
+    void updatePorcelainstatus(String porcelainCode,Integer status);
+    void updatePorcelainauditContent(String porcelainCode,String auditContent);
+}

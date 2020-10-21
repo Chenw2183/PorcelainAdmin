@@ -1,0 +1,85 @@
+package com.stone.controller;
+
+
+import com.stone.domain.CmProductCheck;
+import com.stone.domain.CmProductCheckInput;
+import com.stone.domain.CmUser;
+import com.stone.service.CmProductCheckService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/productcheck")
+public class ProductCheckController {
+
+    @Autowired
+    CmProductCheckService cmProductCheckService;
+
+    List<CmProductCheck> list;
+
+    /**
+     * 查询 根据审核状态 0  1  -1
+     * @param status
+     */
+    @RequestMapping(value="/selectCheck/{status}")
+    public List<CmProductCheck> selectCheck(@PathVariable Integer status) {
+        if(list!=null){ list.clear(); }
+        list=cmProductCheckService.selectCheck(status);
+        return cmProductCheckService.selectCheck(status);
+    }
+
+    /**
+     * 组合查询
+     */
+    @RequestMapping(value="/combinationSelect")
+    public CmProductCheck combinationSelect(@RequestBody CmProductCheckInput cmProductCheckInput) {
+        for (int i = 0; i <list.size() ; i++) {
+            if(
+                    (cmProductCheckInput.getPorcelainCode().equals(list.get(i).getPorcelainCode())) &&
+                    (cmProductCheckInput.getPorcelainName().equals(list.get(i).getPorcelainName())) &&
+                    (cmProductCheckInput.getUserName().equals(list.get(i).getUserName()))
+            ){
+               return  list.get(i);
+            }
+        }
+        return null;
+
+    }
+
+    /**
+     * 操作 -通过
+     *产品编号 + url
+     * 0待审核，1审核通过，-1驳回未通过
+     */
+    @RequestMapping(value="/operatingBy")
+    public void operatingBy(@RequestBody CmProductCheck CmProductCheck) {
+        cmProductCheckService.operatingBy(CmProductCheck);
+    }
+
+    /**
+     * 操作 -编辑
+     *产品编号 + url
+     */
+    @RequestMapping(value="/operatingEdit")
+    public CmProductCheck operatingEdit(@RequestBody CmProductCheck CmProductCheck) {
+        return null;
+    }
+
+
+    /**
+     * 操作 -驳回
+     *产品编号 + auditContent
+     */
+    @RequestMapping(value="/operatingReject")
+    public CmProductCheck operatingReject(@RequestBody CmProductCheck CmProductCheck) {
+        return null;
+    }
+
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stone.mapper.CmProductCheckMapper">
+    <select id="selectCheck" resultType="com.stone.domain.CmProductCheck">
+        select * from cm_porcelain where status=#{status};
+    </select>
+
+    <select id="selectByUserName" resultType="com.stone.domain.CmUser">
+        select * from cm_user where user_code=#{userCode};
+    </select>
+
+    <update id="updatePorcelain" parameterType="com.stone.domain.CmPorcelain">
+        update cm_porcelain set url=#{url} where porcelain_code=#{porcelainCode};
+    </update>
+
+    <update id="updatePorcelainstatus" parameterType="com.stone.domain.CmPorcelain">
+        update cm_porcelain set status=#{status} where porcelain_code=#{porcelainCode};
+    </update>
+
+    <update id="updatePorcelainauditContent" parameterType="com.stone.domain.CmPorcelain">
+        update cm_porcelain set audit_content=#{auditContent} where porcelain_code=#{porcelainCode};
+    </update>
+</mapper>

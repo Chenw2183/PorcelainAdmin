@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cwz.ssmspringboot2.dao.UserDao">
+
+
+    <select id="SelectAll" resultType="com.cwz.ssmspringboot2.domain.User">
+        select * from v_ywxf_gsm_erl_data where date(#{date}) &lt;= DATA_TIME AND DATA_TIME &lt;=
+        DATE_ADD(#{date},INTERVAL #{contrastday} DAY);
+    </select>
+
+
+    <select id="ProvinceSelect" resultType="com.cwz.ssmspringboot2.domain.User2">
+        SELECT DATA_TIME,COALESCE(SUM(${WX_004_XXXX}),0) AS WX_004_0019 FROM v_ywxf_gsm_erl_data WHERE DATA_TIME BETWEEN
+        #{nowdate} AND #{beforedate} GROUP BY DATE(v_ywxf_gsm_erl_data.DATA_TIME);
+    </select>
+
+
+</mapper>

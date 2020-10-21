@@ -1,0 +1,58 @@
+package com.stone.service.impl;
+
+import com.stone.domain.CmProductCheck;
+import com.stone.domain.CmUser;
+import com.stone.mapper.CmProductCheckMapper;
+import com.stone.service.CmProductCheckService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+
+@Service
+public class CmProductCheckServiceImpl implements CmProductCheckService {
+
+    @Autowired
+    CmProductCheckMapper cmProductCheckMapper;
+
+    @Override
+    public List<CmProductCheck> selectCheck(Integer status) {
+        List<CmProductCheck> list=cmProductCheckMapper.selectCheck(status);
+
+        for (int i = 0; i < list.size(); i++) {
+            if(cmProductCheckMapper.selectByUserName(list.get(i).getUserCode())!=null) {
+                list.get(i).setUserName(cmProductCheckMapper.selectByUserName(list.get(i).getUserCode()).getUserName());
+            }
+        }
+
+
+        return list;
+    }
+
+    @Override
+    public void operatingBy(CmProductCheck CmProductCheck) {
+        //更新状态
+        cmProductCheckMapper.updatePorcelainstatus(CmProductCheck.getPorcelainCode(),CmProductCheck.getStatus());
+        //更新URL
+        if(CmProductCheck.getUrl()!=null && CmProductCheck.getUrl()!=""){
+            cmProductCheckMapper.updatePorcelain(CmProductCheck.getPorcelainCode(),CmProductCheck.getUrl());
+        }
+
+    }
+
+    @Override
+    public void operatingEdit(CmProductCheck CmProductCheck) {
+        //更新URL
+        if(CmProductCheck.getUrl()!=null && CmProductCheck.getUrl()!=""){
+            cmProductCheckMapper.updatePorcelain(CmProductCheck.getPorcelainCode(),CmProductCheck.getUrl());
+        }
+    }
+
+    @Override
+    public void operatingReject(CmProductCheck CmProductCheck) {
+        cmProductCheckMapper.updatePorcelainauditContent(CmProductCheck.getPorcelainCode(),CmProductCheck.getAuditContent());
+    }
+
+
+}

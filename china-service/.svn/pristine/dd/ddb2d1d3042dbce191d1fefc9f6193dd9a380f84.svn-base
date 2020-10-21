@@ -1,0 +1,8 @@
+package com.stone.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.stone.domain.CmUser;
+
+public interface CmUserMapper extends BaseMapper<CmUser> {
+    int addUser(CmUser cmUser);
+}

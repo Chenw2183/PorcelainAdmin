@@ -1,0 +1,98 @@
+package com.stone.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.CmPorcelain;
+import com.stone.mapper.CmPorcelainMapper;
+import com.stone.mapper.CmRoleMapper;
+import com.stone.service.CmPorcelainService;
+import com.stone.service.CmRoleService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Service
+public class CmPorcelainServiceImpl extends ServiceImpl<CmPorcelainMapper, CmPorcelain> implements CmPorcelainService {
+    @Autowired
+    private CmPorcelainMapper cmPorcelainMapper;
+    @Autowired
+    private CmRoleService cmRoleService;
+
+    //添加瓷器信息
+    public CmPorcelain addPorcelain(CmPorcelain cmPorcelain) {
+        synchronized (this) {
+            SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmSS");
+            Date date = new Date();
+            cmPorcelain.setPorcelainCode("p" + sd.format(date));
+            cmPorcelain.setSubmitTime(date);
+            cmPorcelainMapper.insert(cmPorcelain);
+        }
+        return cmPorcelain;
+    }
+
+    //分页查询所有瓷器信息
+    public Page<CmPorcelain> findByPage(PageQueryBean<CmPorcelain> pageQueryBean) {
+        int pageNum = pageQueryBean.getPageNum() == null ? 0 : pageQueryBean.getPageNum();
+        int pageSize = pageQueryBean.getPageSize() == null ? 10 : pageQueryBean.getPageSize();
+        Page<CmPorcelain> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<CmPorcelain> wrapper = new QueryWrapper<>();
+        CmPorcelain cmPorcelain = pageQueryBean.getQueryCondition();
+        if (!cmRoleService.selectByRoleCode(cmPorcelain.getUserCode()).getDescription().equals("管理员")){
+            wrapper = wrapper.eq("user_code", cmPorcelain.getUserCode());
+        }
+        if (StringUtils.isNotEmpty(cmPorcelain.getPorcelainName())) {
+            wrapper = wrapper.like("porcelain_name", cmPorcelain.getPorcelainName());
+        }
+        if (StringUtils.isNotEmpty(cmPorcelain.getPorcelainCode())) {
+            wrapper = wrapper.like("porcelain_code", cmPorcelain.getPorcelainCode());
+        }
+        if (StringUtils.isNotEmpty(cmPorcelain.getPorcelainType())) {
+            wrapper = wrapper.eq("porcelain_type", cmPorcelain.getPorcelainType());
+        }
+        if (cmPorcelain.getStatus() != null) {
+            wrapper = wrapper.eq("status", cmPorcelain.getStatus());
+        }
+
+
+        if (StringUtils.isNotEmpty(pageQueryBean.getOrderByColumn())) {
+            if (StringUtils.isNotEmpty(pageQueryBean.getIsAsc()) && "desc".equals(pageQueryBean.getIsAsc().toLowerCase())) {
+                wrapper = wrapper.orderByDesc(pageQueryBean.getOrderByColumn());
+            } else {
+                wrapper = wrapper.orderByAsc(pageQueryBean.getOrderByColumn());
+            }
+        }
+        return cmPorcelainMapper.selectPage(page, wrapper);
+    }
+
+    //检验瓷器是否已存在
+    public CmPorcelain checkByName(String porcelainName) {
+        QueryWrapper<CmPorcelain> wrapper = new QueryWrapper<>();
+        wrapper.eq("porcelain_name", porcelainName);
+        return cmPorcelainMapper.selectOne(wrapper);
+    }
+
+    //通过编号修改瓷器信息
+    public int updateCmPorcelain(CmPorcelain cmPorcelain) {
+        UpdateWrapper<CmPorcelain> wrapper = new UpdateWrapper<>();
+        wrapper.eq("porcelain_code", cmPorcelain.getPorcelainCode());
+        return cmPorcelainMapper.update(cmPorcelain, wrapper);
+    }
+
+    //通过ID修改瓷器信息
+    public int updateCmPorcelainById(CmPorcelain cmPorcelain) {
+        return cmPorcelainMapper.updateById(cmPorcelain);
+    }
+
+    //删除瓷器信息
+    public boolean deleteCmPorcelain(String porcelainCode) {
+        QueryWrapper<CmPorcelain> wrapper = new QueryWrapper<>();
+        wrapper.eq("porcelain_code", porcelainCode);
+        return this.remove(wrapper);
+    }
+}

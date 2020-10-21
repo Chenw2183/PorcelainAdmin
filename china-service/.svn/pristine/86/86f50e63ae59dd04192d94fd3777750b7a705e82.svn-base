@@ -1,0 +1,126 @@
+package com.stone.service.impl;
+
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.CmUser;
+import com.stone.mapper.CmUserMapper;
+import com.stone.service.CmUserService;
+import com.stone.utils.MD5;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.FileInputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+@Service
+public class CmUserServiceImpl extends ServiceImpl<CmUserMapper, CmUser> implements CmUserService {
+    @Autowired
+    private CmUserMapper cmUserMapper;
+
+    @Override
+    public int addUser(CmUser cmUser) throws Exception {
+
+        Date date = new Date();
+        cmUser.setCreateTime(date);
+        Properties properties = new Properties();
+        properties.load(CmUserServiceImpl.class.getClassLoader().getResourceAsStream("user.properties"));
+        String s = MD5.EncoderByMd5(properties.getProperty("password"));
+        cmUser.setPassword(s);
+        cmUser.setRoleCode(properties.getProperty("roleCode"));
+        return cmUserMapper.insert(cmUser);
+
+    }
+
+    //通过企业编号查找
+    @Override
+    public CmUser findById(Long id) {
+        if (id != null) {
+            CmUser cmUser = cmUserMapper.selectById(id);
+            return cmUser;
+        } else {
+            return null;
+        }
+
+    }
+    //添加时判断用户是否存在,检验用户名唯一性
+    @Override
+    public CmUser checkUser(String username) {
+        QueryWrapper<CmUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_name",username);
+        return cmUserMapper.selectOne(wrapper);
+    }
+    //添加时检验账号（企业编号）是否唯一
+    @Override
+    public CmUser checkUserCode(String userCode) {
+        QueryWrapper<CmUser> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_code",userCode);
+        return cmUserMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public List<CmUser> findAll() {
+        List<CmUser> cmUser = cmUserMapper.selectList(null);
+        return cmUser;
+    }
+
+    @Override
+    public Page<CmUser> findByPage(PageQueryBean<CmUser> pageQueryBean) {
+
+        int pageNum = pageQueryBean.getPageNum() == null ? 0 : pageQueryBean.getPageNum();
+        int pageSize = pageQueryBean.getPageSize() == null ? 10 : pageQueryBean.getPageSize();
+        Page<CmUser> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<CmUser> wrapper = new QueryWrapper<>();
+        CmUser condition = pageQueryBean.getQueryCondition();
+        if (condition != null) {
+            if (condition.getId() != null) {
+                wrapper = wrapper.eq("id", condition.getId());
+            }
+            if (StringUtils.isNotEmpty(condition.getUserName())) {
+                wrapper = wrapper.eq("user_name", condition.getUserName());
+            }
+            if (condition.getLoginLock() != null) {
+                wrapper = wrapper.eq("login_lock", condition.getLoginLock());
+            }
+        }
+        // 拼接排序条件
+        if (StringUtils.isNotEmpty(pageQueryBean.getOrderByColumn())) {
+            if (StringUtils.isNotEmpty(pageQueryBean.getIsAsc()) && "desc".equals(pageQueryBean.getIsAsc().toLowerCase())) {
+                wrapper = wrapper.orderByDesc(pageQueryBean.getOrderByColumn());
+            } else {
+                wrapper = wrapper.orderByAsc(pageQueryBean.getOrderByColumn());
+            }
+        }
+
+        return this.cmUserMapper.selectPage(page, wrapper);
+    }
+
+    @Override
+    public int updateUser(CmUser cmUser) throws Exception {
+        UpdateWrapper<CmUser> wrapper = new UpdateWrapper<>();
+        if (StringUtils.isNotEmpty(cmUser.getPassword())) {
+            String s = MD5.EncoderByMd5(cmUser.getPassword());
+            cmUser.setPassword(s);
+            wrapper.eq("id", cmUser.getId());
+            return cmUserMapper.update(cmUser, wrapper);
+        } else {
+            wrapper.eq("id", cmUser.getId());
+            return cmUserMapper.update(cmUser, wrapper);
+        }
+    }
+
+    @Override
+    public boolean updateUserStatus(CmUser cmUser) {
+        UpdateWrapper<CmUser> wrapper = new UpdateWrapper<>();
+        wrapper
+                .eq("id", cmUser.getId())
+                .set("login_lock", cmUser.getLoginLock());
+        return this.update(null, wrapper);
+    }
+}

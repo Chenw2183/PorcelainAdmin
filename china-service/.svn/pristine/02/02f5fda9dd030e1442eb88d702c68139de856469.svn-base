@@ -1,0 +1,18 @@
+package com.stone.service;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.CmPorcelain;
+
+public interface CmPorcelainService {
+    //添加瓷器信息
+    int addPorcelain(CmPorcelain cmPorcelain);
+    //分页查询所有瓷器信息
+    Page<CmPorcelain> findByPage(PageQueryBean<CmPorcelain> pageQueryBean);
+    //检验瓷器是否已存在
+    CmPorcelain checkByName(String porcelainName);
+    //修改瓷器信息
+    int updateCmPorcelain(CmPorcelain cmPorcelain);
+    //删除瓷器信息
+    boolean deleteCmPorcelain(String porcelainCode);
+}

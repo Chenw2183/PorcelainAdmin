@@ -1,0 +1,87 @@
+package com.stone.controller;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.*;
+import com.stone.service.CmRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/role")
+public class RoleController {
+
+    @Autowired
+    private CmRoleService cmRoleService;
+
+
+    /**
+     * 根据id 更改  0：正常；1：冻结
+     *
+     * @param id
+     */
+    @RequestMapping(value = "/updateByIds/{id}")
+    public String updateByIds(@PathVariable long id) {
+        return cmRoleService.updateByIds(id);
+    }
+
+    /**
+     * 根据id查询
+     */
+    @RequestMapping(value = "/selecteByIds/{id}")
+    public CmRole selecteByIds(@PathVariable int id) {
+        return cmRoleService.selectByIds(id);
+    }
+
+    /**
+     * 分页查询
+     * 组合查询
+     * @param pageQueryBean
+     * @return
+     */
+    @PostMapping("/listPage")
+    public Page<CmRole> listPage(@RequestBody PageQueryBean<CmRole> pageQueryBean) {
+        return cmRoleService.listPage(pageQueryBean);
+    }
+
+    /**
+     * 添加
+     */
+    @RequestMapping(value = "/addRole")
+    public Page<CmRole> addRole(@RequestBody CmRoleCompetence cmRoleCompetence) {
+        return cmRoleService.addToRole(cmRoleCompetence);
+    }
+
+    /**
+     * 编辑
+     */
+    @RequestMapping(value = "/edit")
+    public List<CmRoleMenu> edit(@RequestBody CmRole cmRole) {
+        return cmRoleService.Selectedit(cmRole);
+    }
+
+
+    /**
+     * 编辑保存
+     */
+    @RequestMapping(value = "/editAndSave")
+    public void editAndSave(@RequestBody CmRoleCompetence cmRoleCompetence) {
+        cmRoleService.updateByCode(cmRoleCompetence);
+    }
+
+
+    /**
+     * 查询权限
+     */
+    @RequestMapping(value = "/selectMenuAll")
+    public List<CmMenu> selectMenuAll() {
+        return cmRoleService.selectCmmenu();
+    }
+
+
+}

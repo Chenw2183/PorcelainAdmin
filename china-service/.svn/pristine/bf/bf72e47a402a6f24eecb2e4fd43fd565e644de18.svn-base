@@ -1,0 +1,46 @@
+package com.stone.service;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.*;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
+public interface CmUserService extends IService<CmUser> {
+
+    //添加用户信息
+    CmUser addUser(CmUser cmUser) throws Exception;
+
+    //根据id查找用户信息
+    CmUser findByUserCode(String userCode);
+
+    //添加时判断用户是否存在
+    CmUser checkUser(String username);
+
+    //添加时检验账号（企业编号）是否唯一
+    CmUser checkUserCode(String userCode);
+
+    //查找所有用户信息
+    List<CmUser> findAll();
+
+    //分页查找所有用户信息
+    Page<CmUser> findByPage(PageQueryBean<CmUser> pageQueryBean);
+
+    //更新用户信息
+    int updateUser(CmUser cmUser) throws Exception;
+
+    //修改账号状态 0：不冻结 1：冻结
+    boolean updateUserStatus(CmUser cmUser);
+
+
+    //登录
+    List<CmRoleMenu> findByPage(PageQueryBean<CmUser> pageQueryBean, CmUserLogIn cmUserLogIn) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+    Page<CmRole> listPage1(PageQueryBean<CmRole> pageQueryBean);
+
+    List<CmMenu> logIn(CmUserLogIn cmUserLogIn) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+
+}

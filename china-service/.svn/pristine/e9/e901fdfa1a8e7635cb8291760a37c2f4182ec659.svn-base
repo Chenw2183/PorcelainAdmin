@@ -1,0 +1,16 @@
+package com.stone.service;
+
+import com.stone.domain.CmProductCheck;
+import com.stone.domain.CmUser;
+
+import java.util.List;
+
+public interface CmProductCheckService {
+    List<CmProductCheck> selectCheck(Integer status);
+
+    void operatingBy(CmProductCheck CmProductCheck);
+
+    void operatingEdit(CmProductCheck CmProductCheck);
+
+    void operatingReject(CmProductCheck CmProductCheck);
+}

@@ -1,0 +1,34 @@
+package com.stone.service;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.*;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
+public interface CmRoleService extends IService<CmRole> {
+
+    //分页查询
+    Page<CmRole> listPage(PageQueryBean<CmRole> pageQueryBean);
+
+    //根据ID更新
+    String updateByIds(long id);
+
+    //根据ID查询
+    CmRole selectByIds(long id);
+
+    //添加
+    Page<CmUser> findByPage(PageQueryBean<CmUser> pageQueryBean, CmRoleCompetence cmRoleCompetence);
+
+    String addToRole(CmRoleCompetence cmRoleCompetence);
+
+    //编辑
+    List<CmRoleMenu> Selectedit(CmRole cmRole);
+
+    //编辑保存
+    void updateByCode(CmRoleCompetence cmRoleCompetence);
+
+}

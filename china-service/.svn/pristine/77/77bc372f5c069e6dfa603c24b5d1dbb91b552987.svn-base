@@ -1,0 +1,49 @@
+package com.stone.service.impl;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stone.bean.PageQueryBean;
+import com.stone.domain.CmPorcelain;
+import com.stone.mapper.CmPorcelainMapper;
+import com.stone.service.CmPorcelainService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Service
+public class CmPorcelainServiceImpl extends ServiceImpl<CmPorcelainMapper,CmPorcelain> implements CmPorcelainService {
+    @Autowired
+    private CmPorcelainMapper cmPorcelainMapper;
+
+    //添加瓷器信息
+    @Override
+    public int addPorcelain(CmPorcelain cmPorcelain) {
+        SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmSS");
+        Date date = new Date();
+        cmPorcelain.setPorcelainCode("p"+sd.format(date));
+        cmPorcelain.setSubmitTime(date);
+        return cmPorcelainMapper.insert(cmPorcelain);
+    }
+
+    @Override
+    public Page<CmPorcelain> findByPage(PageQueryBean<CmPorcelain> pageQueryBean) {
+        return null;
+    }
+
+    @Override
+    public CmPorcelain checkByName(String porcelainName) {
+        return null;
+    }
+
+    @Override
+    public int updateCmPorcelain(CmPorcelain cmPorcelain) {
+        return 0;
+    }
+
+    @Override
+    public boolean deleteCmPorcelain(String porcelainCode) {
+        return false;
+    }
+}
